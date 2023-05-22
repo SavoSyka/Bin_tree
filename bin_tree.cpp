@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstring>
+#include <chrono>
+#include <fstream>
 
 struct node_t{
     node_t *left;
@@ -168,9 +170,9 @@ bool TreeNodeDelete( binary_tree_t **tree, void *data) {
         return false;
     }
     else if (node->right == NULL && node->left == NULL) { // list
-        std::cout<<"list"<<std::endl;
+        //std::cout<<"list"<<std::endl;
         if (node->parent == NULL){                      // list - root
-            std::cout<<"list & root"<<std::endl;
+            //  std::cout<<"list & root"<<std::endl;
             (*tree)->root = NULL;
             delete node;
             return true;
@@ -188,7 +190,7 @@ bool TreeNodeDelete( binary_tree_t **tree, void *data) {
 
     }
     else if( node->right == NULL){               // node with only left subtree
-        std::cout<<"right free"<<std::endl;
+        //std::cout<<"right free"<<std::endl;
         if (node->parent == NULL){
             node->left->parent = NULL;
             (*tree)->root = node->left;
@@ -211,7 +213,7 @@ bool TreeNodeDelete( binary_tree_t **tree, void *data) {
         }
     }
     else if ( node->left == NULL ){             // node with only right subtree
-        std::cout<<"left free"<<std::endl;
+        // std::cout<<"left free"<<std::endl;
         if (node->parent == NULL){
             node->right->parent = NULL;
             (*tree)->root = node->right;
@@ -234,16 +236,16 @@ bool TreeNodeDelete( binary_tree_t **tree, void *data) {
     }
 
     else if (node->left!=NULL && node->right!=NULL){
-        std::cout<<"right & left"<<std::endl;
+        //std::cout<<"right & left"<<std::endl;
         if (node->parent != NULL) {
-            std::cout << "node->parent: " << *reinterpret_cast<int *>( node->parent + 1 ) << std::endl;
+            //  std::cout << "node->parent: " << *reinterpret_cast<int *>( node->parent + 1 ) << std::endl;
         }
         if (node->parent==NULL){                        // root
-            std::cout<<"root"<<std::endl;
+            //std::cout<<"root"<<std::endl;
             node_t* new_node = MaxOfLeft(tree);    // ell for switch
-            std::cout<<" new: "<<*reinterpret_cast<int*>( new_node + 1 )<<std::endl;
+            //std::cout<<" new: "<<*reinterpret_cast<int*>( new_node + 1 )<<std::endl;
             if (node->left == new_node){  // ell for switch —  root->left
-                std::cout<<"new is root->left"<<std::endl;
+                //  std::cout<<"new is root->left"<<std::endl;
                 new_node->right = node->right;
                 node->right->parent = new_node;
                 new_node->parent = node->parent;
@@ -256,7 +258,7 @@ bool TreeNodeDelete( binary_tree_t **tree, void *data) {
 
             }
             else if ( new_node->left == NULL && new_node->right == NULL ){  // new is list
-                std::cout<<"new is list"<<std::endl;
+                //std::cout<<"new is list"<<std::endl;
                 new_node->left = node->left;
                 new_node->right = node->right;
 
@@ -270,7 +272,7 @@ bool TreeNodeDelete( binary_tree_t **tree, void *data) {
                 return true;
             }
             else if (new_node->left != NULL){                      // not a list
-                std::cout<<"not a list"<<std::endl;
+                //std::cout<<"not a list"<<std::endl;
 
                 new_node->parent->right = new_node->left;
                 new_node->left->parent = new_node->parent;
@@ -289,59 +291,59 @@ bool TreeNodeDelete( binary_tree_t **tree, void *data) {
             }
         }
         else if (node->parent->left == node) {     // left subtree
-                std::cout << "left subtree!" << std::endl;
+            //std::cout << "left subtree!" << std::endl;
 
-                node_t *new_node = MaxOfLeft(node);
-                if (node->left == new_node) {  // ell for switch —  node->left
-                    std::cout << "new is node->left" << std::endl;
-                    new_node->right = node->right;
-                    node->right->parent = new_node;
-                    new_node->parent = node->parent;
-                    node->parent->left = new_node;
+            node_t *new_node = MaxOfLeft(node);
+            if (node->left == new_node) {  // ell for switch —  node->left
+                //  std::cout << "new is node->left" << std::endl;
+                new_node->right = node->right;
+                node->right->parent = new_node;
+                new_node->parent = node->parent;
+                node->parent->left = new_node;
 
-                    delete node;
-                    return true;
-                }
-                else if (new_node->left == NULL && new_node->right == NULL) {  // new is list
-                    std::cout << "new is list" << std::endl;
-                    new_node->left = node->left;
-                    new_node->right = node->right;
-                    new_node->parent->right = NULL;
-                    new_node->parent = node->parent;
-                    node->parent->left = new_node;
-                    node->left->parent = new_node;
-                    node->right->parent = new_node;
-                    delete node;
-                    return true;
-                }
-                else if (new_node->left != NULL){                      // not a list
-                    std::cout << "not a list" << std::endl;
-
-                    new_node->parent->right = new_node->left;
-                    new_node->left->parent = new_node->parent;
-
-                    new_node->left = node->left;
-                    new_node->right = node->right;
-
-                    node->right->parent = new_node;
-                    node->left->parent = new_node;
-
-                    node->parent->left = new_node;
-                    new_node->parent = node->parent;
-
-
-                    delete node;
-                    return true;
-                }
-
-
+                delete node;
+                return true;
             }
+            else if (new_node->left == NULL && new_node->right == NULL) {  // new is list
+                //std::cout << "new is list" << std::endl;
+                new_node->left = node->left;
+                new_node->right = node->right;
+                new_node->parent->right = NULL;
+                new_node->parent = node->parent;
+                node->parent->left = new_node;
+                node->left->parent = new_node;
+                node->right->parent = new_node;
+                delete node;
+                return true;
+            }
+            else if (new_node->left != NULL){                      // not a list
+                //std::cout << "not a list" << std::endl;
+
+                new_node->parent->right = new_node->left;
+                new_node->left->parent = new_node->parent;
+
+                new_node->left = node->left;
+                new_node->right = node->right;
+
+                node->right->parent = new_node;
+                node->left->parent = new_node;
+
+                node->parent->left = new_node;
+                new_node->parent = node->parent;
+
+
+                delete node;
+                return true;
+            }
+
+
+        }
         else if (node->parent->right == node) {     // right subtree
-            std::cout << "right subtree!" << std::endl;
+            //std::cout << "right subtree!" << std::endl;
 
             node_t *new_node = MinOfRight(node);
             if (node->right == new_node) {  // ell for switch —  node->right
-                std::cout << "new is node->right" << std::endl;
+                //  std::cout << "new is node->right" << std::endl;
                 new_node->left = node->left;
                 node->left->parent = new_node;
                 new_node->parent = node->parent;
@@ -351,7 +353,7 @@ bool TreeNodeDelete( binary_tree_t **tree, void *data) {
                 return true;
             }
             else if (new_node->left == NULL && new_node->right == NULL) {  // new is list
-                std::cout << "new is list" << std::endl;
+                //std::cout << "new is list" << std::endl;
                 new_node->left = node->left;
                 new_node->right = node->right;
                 new_node->parent->left = NULL;
@@ -364,7 +366,7 @@ bool TreeNodeDelete( binary_tree_t **tree, void *data) {
             }
 
             else if (new_node->right != NULL){                      // not a list
-                std::cout << "not a list" << std::endl;
+                //std::cout << "not a list" << std::endl;
 
                 new_node->parent->left = new_node->right;
                 new_node->right->parent = new_node->parent;
@@ -385,7 +387,7 @@ bool TreeNodeDelete( binary_tree_t **tree, void *data) {
 
 
         }
-        }
+    }
 
     return true;
 }
@@ -396,7 +398,7 @@ void integerPreOrder( node_t *root ){
         return;
     }
 
-    std::cout << *reinterpret_cast<int*>( root + 1 ) <<' ';
+    //std::cout << *reinterpret_cast<int*>( root + 1 ) <<' ';
     integerPreOrder( root->left );
     integerPreOrder( root->right );
 }
@@ -409,44 +411,64 @@ int integerCompare( void* first, void* second ){
 
 
 int main() {
-    binary_tree_t *bin_tree;
-    int value;
-    TreeInit(&bin_tree, sizeof(int), integerCompare);
 
-        int values[] = {14, 22, 3, 18, 9, 15, 39, 25, 36, 12, 31, 30, 33, 38, 7, 10, 17, 26, 6, 24
-        };
-    int values_to_delete[] = {22, 7, 17, 24, 10, 15, 38, 18, 36, 6, 31, 14, 9, 25, 26, 30, 3, 12, 33, 39
-    };
+    binary_tree_t *tree;
+    TreeInit(&tree, sizeof(int), integerCompare);
+    std::ofstream fout("AVLtree_add_poryadok.py");
 
+    fout << "from matplotlib import pyplot as plt\nimport numpy as np\n";
 
-    for (int i: values) {
-        TreeAdd(&bin_tree, &i);
+    fout << "am_of_ells = [";
+    int size = 5000;
+    /*int value[] = {100,228,400,1337,1600,3200,5000,7000,10000,15000,20000,
+                   25000,35000,45000,60000,75000,95000,115000,140000,165000,
+                   195000,225000,250000,295000,335000,375000,420000,465000,499999, 510000
 
+    };*/
+    int el1,el2,el3,el4,el5,el6,el7,el8,el9,el10;
+    /*for ( int i : value ){
+        fout << i << " ,";
+    }*/
+    for( int i = 1; i < size; i+=100) {
+        fout << i << " ,";
     }
-
-    integerPreOrder(bin_tree->root);
-    std::cout << '\n';
-
-
-
-    for (int i: values_to_delete) {
-        std::cout<<"value: "<<i<<std::endl;
-        if(TreeNodeDelete(&bin_tree, &i)){
-            integerPreOrder(bin_tree->root);
-            std::cout << '\n';
-            if (bin_tree->root != NULL) {
-                std::cout << "root: " << *reinterpret_cast<int *>( bin_tree->root + 1 ) << std::endl;
-            }
+    fout << "]\n";
+    //int amount = sizeof(value)/sizeof(int);
+    int srch = 1;
+    fout << "time = [";
+    TreeInit(&tree, sizeof(int), integerCompare);
+    int k;
+    for( int i = 1; i< size; i = i+100) {
+        /*for (int j = 0; j<i; j++) {
+            k=i+j;
+            TreeAdd(&tree, &j);
         }
-        else{
-            std::cout<<"no such element in tree"<<std::endl;
+*/
+        TreeInit(&tree, sizeof(int), integerCompare);
+        auto begin = std::chrono::steady_clock::now();
 
+        TreeAdd(&tree, &i);
+//            el1 = rand() / k;
+//            TreeFind(&tree, &el1);
+
+
+        auto end = std::chrono::steady_clock::now();
+        auto time_span = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
+
+        if (i % 100 == 1) {
+            fout << time_span.count() << " ,";
         }
+        std::cout << i / 100 << std::endl;
+
+
     }
-    if (bin_tree->root != NULL) {
-        std::cout << "root: " << *reinterpret_cast<int *>( bin_tree->root + 1 ) << std::endl;
-    }
-    else{
-        std::cout<<"bin_tree is free"<<std::endl;
-    }
+    fout << "]\n";
+    fout << "plt.grid()";
+    fout << "\n";
+    fout << "plt.plot(am_of_ells, time, '.')";
+    fout << "\n";
+    fout << "plt.savefig('AVLtree_add_poryadok')";
+    fout << "\n";
+    fout << "plt.show()";
+    return 0;
 }
